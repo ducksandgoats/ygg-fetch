@@ -49,10 +49,10 @@ module.exports = async function makeOnionFetch (opts = {}) {
     }
     
     function handleLink(url) {
-        const useLink = new URL(url)
-        const arr = useLink.hostname.split(':')
-        useLink.hostname = `[${arr[0].replace(/_/g, ':')}]${arr[1] ? ':' + arr[1] : ''}`
-        return useLink.toString()
+      const useLink = new URL(url)
+      useLink.protocol = useLink.protocol.replace('ygg', 'http')
+      useLink.hostname = `[${useLink.hostname.replace(/_/g, ':')}]`
+      return useLink
     }
 
   async function handleYgg(request) {
@@ -62,13 +62,11 @@ module.exports = async function makeOnionFetch (opts = {}) {
       signal.addEventListener('abort', takeCareOfIt)
     }
 
-    const mainURL = new URL(url)
-
-    const useLink = handleLink(request.url.replace('ygg', 'http'))
+    const mainURL = handleLink(url)
     delete request.url
     const mainTimeout = reqHeaders.has('x-timer') || mainURL.searchParams.has('x-timer') ? reqHeaders.get('x-timer') !== '0' || mainURL.searchParams.get('x-timer') !== '0' ? Number(reqHeaders.get('x-timer') || mainURL.searchParams.get('x-timer')) * 1000 : undefined : useTimeOut
     
-    const mainData = await handleData(mainTimeout, nodeFetch(useLink, request))
+    const mainData = await handleData(mainTimeout, nodeFetch(mainURL.toString(), request))
     
     return sendTheData(signal, {status: mainData.status, headers: mainData.headers, body: mainData.body})
   }
