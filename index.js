@@ -62,7 +62,7 @@ module.exports = async function makeOnionFetch (opts = {}) {
       signal.addEventListener('abort', takeCareOfIt)
     }
 
-    const mainURL = handleLink(url)
+    const mainURL = handleLink(url.replace('ygg', 'http'))
     delete request.url
     const mainTimeout = reqHeaders.has('x-timer') || mainURL.searchParams.has('x-timer') ? reqHeaders.get('x-timer') !== '0' || mainURL.searchParams.get('x-timer') !== '0' ? Number(reqHeaders.get('x-timer') || mainURL.searchParams.get('x-timer')) * 1000 : undefined : useTimeOut
     
