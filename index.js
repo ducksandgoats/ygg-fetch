@@ -50,7 +50,6 @@ module.exports = async function makeOnionFetch (opts = {}) {
     
     function handleLink(url) {
       const useLink = new URL(url)
-      useLink.protocol = useLink.protocol.replace('ygg', 'http')
       useLink.hostname = `[${useLink.hostname.replaceAll('.', ':')}]`
       return useLink
     }
