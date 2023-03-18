@@ -51,7 +51,7 @@ module.exports = async function makeOnionFetch (opts = {}) {
     function handleLink(url) {
       const useLink = new URL(url)
       useLink.protocol = useLink.protocol.replace('ygg', 'http')
-      useLink.hostname = `[${useLink.hostname.replaceAll('_', ':')}]`
+      useLink.hostname = `[${useLink.hostname.replaceAll('.', ':')}]`
       return useLink
     }
 
@@ -63,6 +63,14 @@ module.exports = async function makeOnionFetch (opts = {}) {
     }
 
     const mainURL = handleLink(url.replace('ygg', 'http'))
+
+      if(mainURL.hostname === '_'){
+        // const detectedPort = await detect(mainPort)
+        // const isItRunning = mainPort !== detectedPort
+        // return {status: 200, headers: {'Content-Type': 'text/plain; charset=utf-8'}, body: String(isItRunning)}
+        return { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' }, body: 'running' }
+      }
+
     delete request.url
     const mainTimeout = reqHeaders.has('x-timer') || mainURL.searchParams.has('x-timer') ? reqHeaders.get('x-timer') !== '0' || mainURL.searchParams.get('x-timer') !== '0' ? Number(reqHeaders.get('x-timer') || mainURL.searchParams.get('x-timer')) * 1000 : undefined : useTimeOut
     
